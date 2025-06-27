@@ -132,17 +132,25 @@ INSERT INTO TelefoneQuartel (cnpj, ddd, numero) VALUES
 ('00000000000505', '81', '37778899'),
 ('00000000000606', '81', '30009988');
 
--- Povoamento Tabela Ocorrencia ('protocolo' gerado automaticamente pela ORACLE)
-INSERT INTO Ocorrencia (cep, numero, complemento, data, tipo, descricao) VALUES
-('50000000', 350, NULL, TO_DATE('2025-06-20', 'YYYY-MM-DD'), 'Incendio Residencial', 'Incendio em apartamento no 5o andar.'),
-('50010000', 120, 'Fundos', TO_DATE('2025-06-21', 'YYYY-MM-DD'), 'Acidente de Transito', 'Colisao entre carro e moto.'),
-('50030000', 50, 'Apto 101', TO_DATE('2025-06-22', 'YYYY-MM-DD'), 'Resgate de Animal', 'Gato preso em arvore.'),
-('50040000', 200, NULL, TO_DATE('2025-06-23', 'YYYY-MM-DD'), 'Inundacao', 'Vazamento de tubulacao em predio comercial.'),
-('50050000', 80, 'Casa 2', TO_DATE('2025-06-24', 'YYYY-MM-DD'), 'Resgate de Animal', 'Cachorro atropelado em via publica.'),
-('50060000', 150, NULL, TO_DATE('2025-06-25', 'YYYY-MM-DD'), 'Incendio Residencial', 'Incendio em apartamento no 3o andar.'),
-('50070000', 45, 'Loja B', TO_DATE('2025-06-26', 'YYYY-MM-DD'), 'Atendimento Pre-Hospitalar', 'Mal subido em via publica.'),
-('50080000', 10, NULL, TO_DATE('2025-06-27', 'YYYY-MM-DD'), 'Incendio Residencial', 'Incendio em apartamento no 1o andar.'),
-('50090000', 75, 'Andar 3', TO_DATE('2025-06-28', 'YYYY-MM-DD'), 'Vazamento de Gas', 'Odor forte de gas em condominio.');
+-- Povoamento Tabela Ocorrencia (INSERT INTO tem que ser chamado várias vezes individualmente para que a contagem do sequence funcione)
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50000000', 350, NULL, TO_DATE('2025-06-20', 'YYYY-MM-DD'), 'Incendio Residencial', 'Incendio em apartamento no 5o andar.');
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50010000', 120, 'Fundos', TO_DATE('2025-06-21', 'YYYY-MM-DD'), 'Acidente de Transito', 'Colisao entre carro e moto.');
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50030000', 50, 'Apto 101', TO_DATE('2025-06-22', 'YYYY-MM-DD'), 'Resgate de Animal', 'Gato preso em arvore.');    
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50040000', 200, NULL, TO_DATE('2025-06-23', 'YYYY-MM-DD'), 'Inundacao', 'Vazamento de tubulacao em predio comercial.');
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50050000', 80, 'Casa 2', TO_DATE('2025-06-24', 'YYYY-MM-DD'), 'Resgate de Animal', 'Cachorro atropelado em via publica.');
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50060000', 150, NULL, TO_DATE('2025-06-25', 'YYYY-MM-DD'), 'Incendio Residencial', 'Incendio em apartamento no 3o andar.');
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50070000', 45, 'Loja B', TO_DATE('2025-06-26', 'YYYY-MM-DD'), 'Atendimento Pre-Hospitalar', 'Mal subido em via publica.');
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50080000', 10, NULL, TO_DATE('2025-06-27', 'YYYY-MM-DD'), 'Incendio Residencial', 'Incendio em apartamento no 1o andar.');
+INSERT INTO Ocorrencia (protocolo,cep, numero, complemento, data, tipo, descricao) VALUES
+(ocorrencia_seq.nextval,'50090000', 75, 'Andar 3', TO_DATE('2025-06-28', 'YYYY-MM-DD'), 'Vazamento de Gas', 'Odor forte de gas em condominio.');
 
 -- Povoamento Tabela ManutencaoViatura
 INSERT INTO ManutencaoViatura (codigo, placa, tipo, data, horario_atendimento, observacoes) VALUES

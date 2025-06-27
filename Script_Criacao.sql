@@ -110,9 +110,9 @@ CREATE TABLE TelefoneQuartel (
     CONSTRAINT fk_telefonequartel_cnpj FOREIGN KEY (cnpj) REFERENCES Quartel(cnpj)
 );
 
--- Tabela Ocorrencia (protocolo é GENERATED ALWAYS AS IDENTITY)
+-- Tabela Ocorrencia (protocolo é gerado pela sequencia 'ocorrencia_seq')
 CREATE TABLE Ocorrencia (
-    protocolo NUMBER(10) GENERATED ALWAYS AS IDENTITY CONSTRAINT pk_ocorrencia PRIMARY KEY,
+    protocolo NUMBER(10) CONSTRAINT pk_ocorrencia PRIMARY KEY,
     cep VARCHAR2(8) CONSTRAINT nn_ocorrencia_cep NOT NULL,
     numero NUMBER(5),
         CONSTRAINT chk_ocorrencia_numero CHECK (numero > 0),
