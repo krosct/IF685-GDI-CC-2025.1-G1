@@ -1,12 +1,12 @@
 -- DROP DE ELEMENTOS QUE JÁ POSSAM EXISTIR ANTERIORMENTE
 DROP SEQUENCE ocorrencia_seq;
 
-DROP TABLE tb_ocorrencias FORCE;
-DROP TABLE tb_viaturas FORCE;
-DROP TABLE tb_quarteis FORCE;
-DROP TABLE tb_pessoas FORCE;
+DROP TABLE tb_ocorrencias;
+DROP TABLE tb_viaturas;
+DROP TABLE tb_quarteis;
+DROP TABLE tb_pessoas;
 
-DROP TYPE tp_ocorrencia  FORCE;
+DROP TYPE tp_ocorrencia FORCE;
 DROP TYPE tp_manutencao_nt FORCE;
 DROP TYPE tp_manutencao FORCE;
 DROP TYPE tp_peca_trocada_nt FORCE;
@@ -95,12 +95,50 @@ CREATE OR REPLACE TYPE tp_bombeiro UNDER tp_pessoa (
     funcao VARCHAR2(255),
     quartel_ref REF tp_quartel,
 
+    CONSTRUCTOR FUNCTION tp_bombeiro(
+        cpf VARCHAR2,
+        nome VARCHAR2,
+        data_nascimento DATE,
+        carteira_habilitacao VARCHAR2,
+        posto VARCHAR2,
+        tempo_servico NUMBER,
+        funcao VARCHAR2,
+        quartel_ref REF tp_quartel
+    ) RETURN SELF AS RESULT,
+
     OVERRIDING MEMBER FUNCTION exibir_info RETURN VARCHAR2,
     MEMBER PROCEDURE promover(novo_posto VARCHAR2)
 );
 /
 
 CREATE OR REPLACE TYPE BODY tp_bombeiro AS
+    CONSTRUCTOR FUNCTION tp_bombeiro(
+        cpf VARCHAR2,
+        nome VARCHAR2,
+        data_nascimento DATE,
+        carteira_habilitacao VARCHAR2,
+        posto VARCHAR2,
+        tempo_servico NUMBER,
+        funcao VARCHAR2,
+        quartel_ref REF tp_quartel
+    ) RETURN SELF AS RESULT
+    IS
+    BEGIN
+        SELF.cpf := cpf;
+        SELF.nome := nome;
+        SELF.data_nascimento := data_nascimento;
+        IF carteira_habilitacao IS NULL THEN
+            SELF.carteira_habilitacao := '-';
+        ELSE
+            SELF.carteira_habilitacao := carteira_habilitacao;
+        END IF;
+        SELF.posto := posto;
+        SELF.tempo_servico := tempo_servico;
+        SELF.funcao := funcao;
+        SELF.quartel_ref := quartel_ref;
+        RETURN;
+    END;
+
     OVERRIDING MEMBER FUNCTION exibir_info RETURN VARCHAR2 IS
     BEGIN
         RETURN 'Bombeiro: ' || self.nome || ', Posto: ' || self.posto || ', Função: ' || self.funcao;
@@ -118,11 +156,43 @@ CREATE OR REPLACE TYPE tp_vitima UNDER tp_pessoa (
     grau_risco VARCHAR2(50),
     observacoes VARCHAR2(255),
 
+    CONSTRUCTOR FUNCTION tp_vitima(
+        cpf VARCHAR2,
+        nome VARCHAR2,
+        data_nascimento DATE,
+        carteira_habilitacao VARCHAR2,
+        grau_risco VARCHAR2,
+        observacoes VARCHAR2
+    ) RETURN SELF AS RESULT,
+
     OVERRIDING MEMBER FUNCTION exibir_info RETURN VARCHAR2
 );
 /
 
 CREATE OR REPLACE TYPE BODY tp_vitima AS
+    CONSTRUCTOR FUNCTION tp_vitima(
+        cpf VARCHAR2,
+        nome VARCHAR2,
+        data_nascimento DATE,
+        carteira_habilitacao VARCHAR2,
+        grau_risco VARCHAR2,
+        observacoes VARCHAR2
+    ) RETURN SELF AS RESULT
+    IS
+    BEGIN
+        SELF.cpf := cpf;
+        SELF.nome := nome;
+        SELF.data_nascimento := data_nascimento;
+        IF carteira_habilitacao IS NULL THEN
+            SELF.carteira_habilitacao := '-';
+        ELSE
+            SELF.carteira_habilitacao := carteira_habilitacao;
+        END IF;
+        SELF.grau_risco := grau_risco;
+        SELF.observacoes := observacoes;
+        RETURN;
+    END;
+
     OVERRIDING MEMBER FUNCTION exibir_info RETURN VARCHAR2 IS
     BEGIN
         RETURN 'Vítima: ' || self.nome || ', Risco: ' || self.grau_risco;
@@ -159,11 +229,35 @@ CREATE OR REPLACE TYPE tp_viatura AS OBJECT (
     quartel_ref REF tp_quartel,
     historico_manutencao tp_manutencao_nt,
 
+    CONSTRUCTOR FUNCTION tp_viatura(
+        placa VARCHAR2,
+        tipo VARCHAR2,
+        quartel_ref REF tp_quartel,
+        estado VARCHAR2 DEFAULT 'Operacional'
+    ) RETURN SELF AS RESULT,
+
     MEMBER FUNCTION is_operacional RETURN BOOLEAN
 );
 /
 
 CREATE OR REPLACE TYPE BODY tp_viatura AS
+    CONSTRUCTOR FUNCTION tp_viatura(
+        placa VARCHAR2,
+        tipo VARCHAR2,
+        quartel_ref REF tp_quartel,
+        estado VARCHAR2 DEFAULT 'Operacional'
+    ) RETURN SELF AS RESULT
+    IS
+    BEGIN
+        SELF.placa := placa;
+        SELF.tipo := tipo;
+        SELF.quartel_ref := quartel_ref;
+        SELF.estado := estado;
+        SELF.historico_manutencao := tp_manutencao_nt();
+
+        RETURN;
+    END;
+
     MEMBER FUNCTION is_operacional RETURN BOOLEAN IS
     BEGIN
         RETURN (self.estado = 'Operacional');
@@ -184,11 +278,48 @@ CREATE OR REPLACE TYPE tp_ocorrencia AS OBJECT (
     bombeiros_atendimento REF tp_bombeiro,
     vitimas_atendidas REF tp_vitima,
 
+    CONSTRUCTOR FUNCTION tp_ocorrencia(
+        protocolo NUMBER,
+        endereco_ocorrencia tp_endereco,
+        data_ocorrencia DATE,
+        tipo VARCHAR2,
+        descricao VARCHAR2,
+        viaturas_usadas REF tp_viatura,
+        bombeiros_atendimento REF tp_bombeiro,
+        vitimas_atendidas REF tp_vitima,
+        observacao_geral VARCHAR2 DEFAULT 'Sem observação.'
+    ) RETURN SELF AS RESULT,
+
     ORDER MEMBER FUNCTION comparar_data(o tp_ocorrencia) RETURN INTEGER
 );
 /
 
 CREATE OR REPLACE TYPE BODY tp_ocorrencia AS
+    CONSTRUCTOR FUNCTION tp_ocorrencia(
+        protocolo NUMBER,
+        endereco_ocorrencia tp_endereco,
+        data_ocorrencia DATE,
+        tipo VARCHAR2,
+        descricao VARCHAR2,
+        viaturas_usadas REF tp_viatura,
+        bombeiros_atendimento REF tp_bombeiro,
+        vitimas_atendidas REF tp_vitima,
+        observacao_geral VARCHAR2 DEFAULT 'Sem observação.'
+    ) RETURN SELF AS RESULT
+    IS
+    BEGIN
+        SELF.protocolo := protocolo;
+        SELF.endereco_ocorrencia := endereco_ocorrencia;
+        SELF.data_ocorrencia := data_ocorrencia;
+        SELF.tipo := tipo;
+        SELF.descricao := descricao;
+        SELF.viaturas_usadas := viaturas_usadas;
+        SELF.bombeiros_atendimento := bombeiros_atendimento;
+        SELF.vitimas_atendidas := vitimas_atendidas;
+        SELF.observacao_geral := observacao_geral;
+        RETURN;
+    END;
+
     ORDER MEMBER FUNCTION comparar_data(o tp_ocorrencia) RETURN INTEGER IS
     BEGIN
         IF self.data_ocorrencia < o.data_ocorrencia THEN
