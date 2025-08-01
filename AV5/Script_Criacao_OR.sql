@@ -48,7 +48,7 @@ CREATE OR REPLACE TYPE tp_telefone_va AS VARRAY(2) OF tp_telefone;
 
 -- Tipo base para Pessoa
 CREATE OR REPLACE TYPE tp_pessoa AS OBJECT (
-    cpf VARCHAR2(11),
+    cpf VARCHAR2(9), -- Valor incorreto para ser corrigido posteriormente com ALTER TYPE
     nome VARCHAR2(255),
     data_nascimento DATE,
     carteira_habilitacao VARCHAR2(1),
@@ -361,4 +361,8 @@ CREATE TABLE tb_ocorrencias OF tp_ocorrencia (
     SCOPE FOR (bombeiros_atendimento) IS tb_pessoas,
     SCOPE FOR (vitimas_atendidas) IS tb_pessoas
 );
+/
+
+-- ALTER TYPE para corrigir o tamanho do CPF
+ALTER TYPE tp_pessoa MODIFY ATTRIBUTE cpf VARCHAR2(11) CASCADE;
 /
