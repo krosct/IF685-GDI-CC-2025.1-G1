@@ -236,7 +236,7 @@ CREATE OR REPLACE TYPE tp_viatura AS OBJECT (
         estado VARCHAR2 DEFAULT 'Operacional'
     ) RETURN SELF AS RESULT,
 
-    MEMBER FUNCTION is_operacional RETURN BOOLEAN
+    MEMBER FUNCTION is_operacional RETURN VARCHAR2
 );
 /
 
@@ -258,9 +258,13 @@ CREATE OR REPLACE TYPE BODY tp_viatura AS
         RETURN;
     END;
 
-    MEMBER FUNCTION is_operacional RETURN BOOLEAN IS
+    MEMBER FUNCTION is_operacional RETURN VARCHAR2 IS
     BEGIN
-        RETURN (self.estado = 'Operacional');
+        IF self.estado = 'Operacional' THEN
+            RETURN 'Sim';
+        ELSE
+            RETURN 'Não';
+        END IF;
     END;
 END;
 /
@@ -336,13 +340,13 @@ END;
 -- Tabela de Quarteis
 CREATE TABLE tb_quarteis OF tp_quartel (
     cnpj PRIMARY KEY
-);
+)
 /
 
 -- Tabela de Pessoas
 CREATE TABLE tb_pessoas OF tp_pessoa (
     cpf PRIMARY KEY
-);
+)
 /
 
 -- Tabela de Viaturas
@@ -351,7 +355,7 @@ CREATE TABLE tb_viaturas OF tp_viatura (
     SCOPE FOR (quartel_ref) IS tb_quarteis
 ) NESTED TABLE historico_manutencao STORE AS nt_historico_manutencao (
     NESTED TABLE pecas_trocadas STORE AS nt_pecas_trocadas
-);
+)
 /
 
 -- Tabela de Ocorrências
@@ -360,8 +364,8 @@ CREATE TABLE tb_ocorrencias OF tp_ocorrencia (
     SCOPE FOR (viaturas_usadas) IS tb_viaturas,
     SCOPE FOR (bombeiros_atendimento) IS tb_pessoas,
     SCOPE FOR (vitimas_atendidas) IS tb_pessoas
-);
-/
+)
+/ 
 
 -- ALTER TYPE para corrigir o tamanho do CPF
 ALTER TYPE tp_pessoa MODIFY ATTRIBUTE cpf VARCHAR2(11) CASCADE;
