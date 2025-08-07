@@ -22,3 +22,18 @@ SELECT p.nome AS nome_bombeiro,
     DEREF(TREAT(VALUE(p) AS tp_bombeiro).quartel_ref).endereco AS endereco_quartel
 FROM tb_pessoas p
 WHERE VALUE(p) IS OF (tp_bombeiro);
+
+-- Retornar o nome do quartel e telefone de cada bombeiro:
+-- Acessando VARRAY
+SELECT q.nome AS nome_quartel,
+       t.ddd || '-' || t.numero AS telefone
+FROM tb_quarteis q,
+     TABLE(q.telefones) t;
+
+-- Retornar placa da viatura, tipo de manutenção e data de manutenção:
+-- Acessando NESTED TABLE
+SELECT v.placa AS placa_viatura,
+       m.tipo AS tipo_manutencao,
+       m.data_manutencao
+FROM tb_viaturas v,
+     TABLE(v.historico_manutencao) m;
