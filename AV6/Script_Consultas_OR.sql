@@ -168,3 +168,74 @@ BEGIN
     DBMS_OUTPUT.PUT_LINE('Novo posto: ' || b.posto);
 END;
 /
+
+-- Casos básicos de uso direto de REF, DEREF, Consulta à VARRAY e Consulta à Nested Table:
+       
+SELECT
+    REF(v)
+FROM
+    tb_viaturas v
+WHERE
+    v.placa = 'KGF1234';
+
+SELECT
+    REF(q)
+FROM
+    tb_quarteis q
+WHERE
+    q.nome = 'Quartel Central de Recife';
+
+SELECT
+    DEREF(p.quartel_ref).nome AS nome_quartel,
+    DEREF(p.quartel_ref).endereco.cidade AS cidade_quartel
+FROM
+    tb_pessoas p
+WHERE
+    p.cpf = '11111111111';
+
+SELECT
+    o.protocolo,
+    DEREF(o.bombeiros_atendimento).nome AS nome_bombeiro_atendente
+FROM
+    tb_ocorrencias o
+WHERE
+    o.protocolo = 1;
+
+SELECT
+    q.nome,
+    t.ddd AS ddd_telefone,
+    t.numero AS numero_telefone
+FROM
+    tb_quarteis q,
+    TABLE(q.telefones) t
+WHERE
+    q.cnpj = '00000000000101'
+    AND ROWNUM = 1;
+
+SELECT
+    q.nome,
+    t.ddd AS ddd_telefone,
+    t.numero AS numero_telefone
+FROM
+    tb_quarteis q,
+    TABLE(q.telefones) t
+WHERE
+    q.nome = 'Quartel de Jaboatão';
+
+SELECT
+    v.placa,
+    t.tipo AS tipo_manutencao,
+    t.data_manutencao
+FROM
+    tb_viaturas v,
+    TABLE(v.historico_manutencao) t
+WHERE
+    v.placa = 'KGF1234';
+
+SELECT
+    v.placa,
+    t.data_manutencao,
+    p.peca
+FROM
+    tb_viaturas v,
+    TABLE(v.hist
